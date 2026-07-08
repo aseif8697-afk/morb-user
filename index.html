@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MORB - Username Hunter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Tajawal', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            background: #0a0a0f;
+        }
+
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(120, 50, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 50, 150, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(50, 200, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #0f0a1a 100%);
+            animation: gradientMove 15s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            33% { transform: scale(1.1) rotate(1deg); }
+            66% { transform: scale(0.95) rotate(-1deg); }
+        }
+
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            animation: fall linear infinite;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            margin-bottom: 5px;
+            letter-spacing: 8px;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.5)); }
+            to { filter: drop-shadow(0 0 40px rgba(72, 219, 251, 0.5)); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            margin-bottom: 50px;
+        }
+
+        .screen {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.6s ease;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .desc {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 40px;
+        }
+
+        .platforms {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .platform-btn {
+            padding: 25px 50px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            color: #fff;
+            font-size: 1.3rem;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 180px;
+        }
+
+        .platform-btn:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .platform-btn.telegram:hover {
+            background: rgba(0, 136, 204, 0.2);
+            border-color: #0088cc;
+            box-shadow: 0 10px 40px rgba(0, 136, 204, 0.3);
+        }
+
+        .platform-btn.whatsapp:hover {
+            background: rgba(37, 211, 102, 0.2);
+            border-color: #25d366;
+            box-shadow: 0 10px 40px rgba(37, 211, 102, 0.3);
+        }
+
+        .platform-btn .icon {
+            font-size: 2.5rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        #platform-title {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+
+        .length-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .length-btn {
+            padding: 12px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+
+        .length-btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        .length-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .hunt-btn {
+            padding: 20px 60px;
+            font-size: 1.5rem;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            margin-bottom: 30px;
+        }
+
+        .hunt-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .hunt-btn:active {
+            transform: scale(0.98);
+        }
+
+        .hunt-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .results-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .results-container.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        #count {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .usernames-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .username-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .username-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(-5px);
+        }
+
+        .username-text {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .username-type {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .type-3 {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+        }
+
+        .type-4 {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: #1a1a2e;
+        }
+
+        .type-5 {
+            background: linear-gradient(135deg, #48dbfb, #0abde3);
+            color: #1a1a2e;
+        }
+
+        .type-6 {
+            background: linear-gradient(135deg, #1dd1a1, #10ac84);
+            color: #fff;
+        }
+
+        .type-rare {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+            color: #fff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .copy-btn {
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(17, 153, 142, 0.4);
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(17, 153, 142, 0.6);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+
+        .results-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .results-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .results-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .results-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .logo { font-size: 2.5rem; letter-spacing: 4px; }
+            .main-title { font-size: 1.8rem; }
+            .platform-btn { padding: 20px 30px; min-width: 140px; }
+            .hunt-btn { padding: 15px 40px; font-size: 1.2rem; }
+            .length-btn { padding: 10px 18px; font-size: 0.9rem; min-width: 65px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="snow-container"></div>
+    <div class="gradient-bg"></div>
+    <div class="content">
+        <div class="logo">MORB</div>
+        <div class="subtitle">Username Hunter</div>
+
+        <div id="welcome-screen" class="screen active">
+            <h1 class="main-title">مرحباً بك في أداة صيد اليوزرات</h1>
+            <p class="desc">صيد يوزرات نادرة لـ Telegram و WhatsApp</p>
+            <div class="platforms">
+                <button class="platform-btn telegram" onclick="selectPlatform('telegram')">
+                    <span class="icon">✈️</span>
+                    <span>Telegram</span>
+                </button>
+                <button class="platform-btn whatsapp" onclick="selectPlatform('whatsapp')">
+                    <span class="icon">💬</span>
+                    <span>WhatsApp</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="hunt-screen" class="screen">
+            <div class="back-btn" onclick="goBack()">← رجوع</div>
+            <h2 id="platform-title">Telegram Hunter</h2>
+
+            <div class="length-selector">
+                <button class="length-btn" data-length="3" onclick="selectLength(3)">ثلاثي 🔥</button>
+                <button class="length-btn" data-length="4" onclick="selectLength(4)">رباعي ⭐</button>
+                <button class="length-btn" data-length="5" onclick="selectLength(5)">خماسي 💎</button>
+                <button class="length-btn" data-length="6" onclick="selectLength(6)">سداسي 🌟</button>
+                <button class="length-btn" data-length="all" onclick="selectLength('all')">الكل 🎯</button>
+            </div>
+
+            <button class="hunt-btn" onclick="startHunting()">🎯 ابدأ الصيد</button>
+
+            <div id="results" class="results-container">
+                <div class="results-header">
+                    <span>اليوزرات النادرة</span>
+                    <span id="count">0</span>
+                </div>
+                <div id="usernames-list" class="usernames-list"></div>
+            </div>
+
+            <button class="copy-btn" onclick="copyAll()" id="copyBtn" style="display:none;">
+                📋 نسخ الكل
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentPlatform = '';
+        let selectedLength = 'all';
+        let foundUsernames = [];
+
+        function createSnow() {
+            const container = document.querySelector('.snow-container');
+            const snowflakes = ['❄', '✦', '✧', '◆', '◇', '•'];
+
+            for (let i = 0; i < 50; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+                flake.style.left = Math.random() * 100 + '%';
+                flake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                flake.style.animationDelay = Math.random() * 10 + 's';
+                flake.style.opacity = Math.random() * 0.5 + 0.1;
+                flake.style.fontSize = (Math.random() * 15 + 8) + 'px';
+                container.appendChild(flake);
+            }
+        }
+
+        createSnow();
+
+        function selectPlatform(platform) {
+            currentPlatform = platform;
+            document.getElementById('welcome-screen').classList.remove('active');
+            document.getElementById('hunt-screen').classList.add('active');
+
+            const title = platform === 'telegram' ? 'Telegram Hunter ✈️' : 'WhatsApp Hunter 💬';
+            document.getElementById('platform-title').textContent = title;
+
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('copyBtn').style.display = 'none';
+            document.getElementById('usernames-list').innerHTML = '';
+            document.getElementById('count').textContent = '0';
+            foundUsernames = [];
+            selectedLength = 'all';
+
+            document.querySelectorAll('.length-btn').forEach(btn => btn.classList.remove('active'));
+        }
+
+        function goBack() {
+            document.getElementById('hunt-screen').classList.remove('active');
+            document.getElementById('welcome-screen').classList.add('active');
+        }
+
+        function selectLength(length) {
+            selectedLength = length;
+            document.querySelectorAll('.length-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.length == length) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // ===== أنماط صيد احترافية - كلها تبدأ بحرف =====
+
+        function getLetter() {
+            const letters = 'abcdefghijklmnopqrstuvwxyz';
+            return letters[Math.floor(Math.random() * letters.length)];
+        }
+
+        function getNum() {
+            const nums = '0123456789';
+            return nums[Math.floor(Math.random() * nums.length)];
+        }
+
+        function getLetterOrNum() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            return chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        function generatePattern3() {
+            // ثلاثي: 3 أحرف أساسية + 2 underscores = 5 حروف (الحد الأدنى لتليجرام)
+            // كلها تبدأ بحرف
+            const patterns = [
+                () => getLetter() + '_' + getLetter() + '_' + getLetter(),           // a_b_c
+                () => getLetter() + '_' + getNum() + '_' + getLetter(),              // a_1_b
+                () => getLetter() + '_' + getLetter() + '_' + getNum(),              // a_b_1
+                () => getLetter() + '_' + getNum() + '_' + getNum(),                // a_1_2
+                () => getLetter() + getLetter() + '_' + getLetter() + '_' + getLetter(),  // ab_c_d
+                () => getLetter() + getNum() + '_' + getLetter() + '_' + getNum(),   // a1_b_2
+                () => getLetter() + '_' + getLetter() + getLetter() + '_' + getNum(), // a_bc_1
+            ];
+            return randomChoice(patterns)();
+        }
+
+        function generatePattern4() {
+            // رباعي: 4 أحرف أساسية + underscore = 5-6 حروف
+            // كلها تبدأ بحرف
+            const patterns = [
+                () => getLetter() + getLetter() + '_' + getLetter() + getLetter(),           // ab_cd
+                () => getLetter() + getLetter() + getLetter() + '_' + getLetter(),             // abc_d
+                () => getLetter() + '_' + getLetter() + getLetter() + getLetter(),             // a_bcd
+                () => getLetter() + getLetter() + '_' + getLetter() + getNum(),               // ab_c1
+                () => getLetter() + getNum() + '_' + getLetter() + getLetter(),               // a1_bc
+                () => getLetter() + getLetter() + getLetter() + getLetter() + '_' + getLetter(), // abcd_e (6 chars)
+                () => getLetter() + '_' + getLetter() + getNum() + '_' + getLetter(),          // a_b1_c
+                () => getLetter() + getLetter() + '_' + getNum() + getNum(),                  // ab_12
+            ];
+            return randomChoice(patterns)();
+        }
+
+        function generatePattern5() {
+            // خماسي: 5 أحرف
+            // كلها تبدأ بحرف
+            const patterns = [
+                () => {
+                    let u = getLetter();
+                    for (let i = 0; i < 4; i++) u += getLetterOrNum();
+                    return u;
+                },
+                () => {
+                    let u = getLetter();
+                    for (let i = 0; i < 3; i++) u += getLetterOrNum();
+                    u += getNum();
+                    return u;
+                },
+                () => {
+                    const a = getLetter();
+                    return a + a + a + a + a;
+                },
+                () => {
+                    const a = getLetter();
+                    const b = getLetter();
+                    return a + b + a + b + a;
+                },
+                () => {
+                    let u = getLetter() + getLetter() + getLetter();
+                    u += '_';
+                    u += getLetter() + getLetter();
+                    return u;
+                },
+                () => {
+                    let u = getLetter() + getLetter();
+                    u += '_';
+                    u += getLetter() + getLetter() + getLetter();
+                    return u;
+                },
+                () => {
+                    const a = getLetter();
+                    const n = getNum();
+                    return a + n + a + n + a;
+                },
+                () => {
+                    let u = getLetter();
+                    for (let i = 0; i < 2; i++) u += getLetter();
+                    u += '_';
+                    u += getLetter() + getLetter();
+                    return u;
+                },
+            ];
+            return randomChoice(patterns)();
+        }
+
+        function generatePattern6() {
+            // سداسي: 6 أحرف
+            // كلها تبدأ بحرف
+            const patterns = [
+                () => {
+                    let u = getLetter();
+                    for (let i = 0; i < 5; i++) u += getLetterOrNum();
+                    return u;
+                },
+                () => {
+                    let u = getLetter();
+                    for (let i = 0; i < 4; i++) u += getLetterOrNum();
+                    u += getNum();
+                    return u;
+                },
+                () => {
+                    const a = getLetter();
+                    return a + a + a + a + a + a;
+                },
+                () => {
+                    const a = getLetter();
+                    const b = getLetter();
+                    return a + b + a + b + a + b;
+                },
+                () => {
+                    let u = getLetter() + getLetter() + getLetter();
+                    u += '_';
+                    u += getLetter() + getLetter() + getLetter();
+                    return u;
+                },
+                () => {
+                    const a = getLetter();
+                    const n = getNum();
+                    return a + n + a + n + a + n;
+                },
+                () => {
+                    let u = getLetter() + getLetter();
+                    u += '_';
+                    u += getLetter() + getLetter() + getLetter() + getLetter();
+                    return u;
+                },
+                () => {
+                    let u = getLetter() + getLetter() + getLetter() + getLetter();
+                    u += '_';
+                    u += getLetter() + getLetter();
+                    return u;
+                },
+            ];
+            return randomChoice(patterns)();
+        }
+
+        function randomChoice(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateRareUsername() {
+            if (selectedLength === 'all') {
+                const lengths = [3, 4, 5, 6];
+                const length = randomChoice(lengths);
+                if (length === 3) return { username: generatePattern3(), type: '3' };
+                if (length === 4) return { username: generatePattern4(), type: '4' };
+                if (length === 5) return { username: generatePattern5(), type: '5' };
+                if (length === 6) return { username: generatePattern6(), type: '6' };
+            } else if (selectedLength == 3) {
+                return { username: generatePattern3(), type: '3' };
+            } else if (selectedLength == 4) {
+                return { username: generatePattern4(), type: '4' };
+            } else if (selectedLength == 5) {
+                return { username: generatePattern5(), type: '5' };
+            } else if (selectedLength == 6) {
+                return { username: generatePattern6(), type: '6' };
+            }
+            return { username: '', type: '' };
+        }
+
+        async function checkTelegramAvailability(username) {
+            try {
+                const proxyUrls = [
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://t.me/' + username)}`,
+                    `https://corsproxy.io/?${encodeURIComponent('https://t.me/' + username)}`
+                ];
+
+                const response = await fetch(proxyUrls[0], { 
+                    method: 'GET',
+                    signal: AbortSignal.timeout(8000)
+                });
+
+                if (!response.ok) {
+                    const response2 = await fetch(proxyUrls[1], {
+                        signal: AbortSignal.timeout(8000)
+                    });
+                    const text2 = await response2.text();
+                    return !text2.includes('tgme_page_extra') && !text2.includes('View in Telegram');
+                }
+
+                const text = await response.text();
+                return !text.includes('tgme_page_extra') && !text.includes('View in Telegram');
+            } catch (e) {
+                console.log('Check error:', e);
+                return null;
+            }
+        }
+
+        async function checkWhatsAppAvailability(username) {
+            return null;
+        }
+
+        async function startHunting() {
+            const btn = document.querySelector('.hunt-btn');
+            btn.textContent = '⏳ جاري الصيد...';
+            btn.disabled = true;
+
+            const resultsDiv = document.getElementById('results');
+            const listDiv = document.getElementById('usernames-list');
+            const countSpan = document.getElementById('count');
+
+            resultsDiv.classList.add('show');
+            listDiv.innerHTML = '';
+            foundUsernames = [];
+
+            let count = 0;
+            const targetCount = 15;
+            let checked = 0;
+
+            const statsDiv = document.createElement('div');
+            statsDiv.style.cssText = 'color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-bottom: 10px; text-align: center;';
+            statsDiv.id = 'stats';
+            statsDiv.textContent = 'جاري الفحص... 0 يوزر تم فحصه';
+            listDiv.appendChild(statsDiv);
+
+            const interval = setInterval(async () => {
+                if (count >= targetCount) {
+                    clearInterval(interval);
+                    btn.textContent = '🎯 ابدأ الصيد مرة أخرى';
+                    btn.disabled = false;
+                    document.getElementById('copyBtn').style.display = 'inline-block';
+                    statsDiv.textContent = `تم فحص ${checked} يوزر | تم العثور على ${foundUsernames.length} يوزر نادر`;
+                    return;
+                }
+
+                const data = generateRareUsername();
+                const prefix = currentPlatform === 'telegram' ? '@' : '';
+                const fullUsername = prefix + data.username;
+
+                if (!foundUsernames.some(u => u.username === fullUsername) && data.username !== '') {
+                    checked++;
+                    statsDiv.textContent = `جاري الفحص... ${checked} يوزر تم فحصه`;
+
+                    let isAvailable = null;
+
+                    if (currentPlatform === 'telegram') {
+                        isAvailable = await checkTelegramAvailability(data.username);
+                    } else {
+                        isAvailable = await checkWhatsAppAvailability(data.username);
+                    }
+
+                    if (isAvailable !== false) {
+                        foundUsernames.push({ username: fullUsername, type: data.type, available: isAvailable });
+
+                        const item = document.createElement('div');
+                        item.className = 'username-item';
+
+                        const typeClass = 'type-' + data.type;
+                        const typeText = data.type === '3' ? 'ثلاثي نادر 🔥' : 
+                                         data.type === '4' ? 'رباعي نادر ⭐' : 
+                                         data.type === '5' ? 'خماسي نادر 💎' : 
+                                         data.type === '6' ? 'سداسي نادر 🌟' : 'نادر';
+
+                        const statusIcon = isAvailable === true ? '✅' : '❓';
+
+                        item.innerHTML = `
+                            <span class="username-text">${fullUsername}</span>
+                            <span class="username-type ${typeClass}">${typeText} ${statusIcon}</span>
+                        `;
+
+                        listDiv.appendChild(item);
+                        countSpan.textContent = foundUsernames.length;
+                        count++;
+
+                        resultsDiv.scrollTop = resultsDiv.scrollHeight;
+                    }
+                }
+            }, 600);
+        }
+
+        function copyAll() {
+            const text = foundUsernames.map(u => u.username).join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ تم النسخ!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+  </html>
